@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="new_books">
+		<item>Matthew</item>
+		<item>Mark</item>
+		<item>Luke</item>
+		<item>John</item>
+		<item>Acts</item>
+		<item>Roans</item>
+		<item>1 Corinthians</item>
+		<item>2 Corinthians</item>
+		<item>Ephesiaus</item>
+		<item>Philippians</item>
+		<item>Colossians</item>
+		<item>1 Thessalonians</item>
+		<item>2 Thessalonians</item>
+		<item>1 Timothy</item>
+		<item>2 Timothy</item>
+		<item>Titus</item>
+		<item>Philemon</item>
+		<item>Hebrews</item>
+		<item>James</item>
+		<item>1 Peter</item>
+		<item>2 Peter</item>
+		<item>1 John</item>
+		<item>2 John</item>
+		<item>3 John</item>
+		<item>Jude</item>
+		<item>Revelation</item>
+	</string-array>
+</resources>

@@ -19,28 +19,28 @@ public class BooksList extends ListActivity {
 
     private ArrayAdapter<CharSequence> mBooksArrayAdapter;
 
-	@Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
-		SharedPreferences settings = getSharedPreferences("settings", MODE_PRIVATE);
+        SharedPreferences settings = getSharedPreferences("settings", MODE_PRIVATE);
         if (!settings.getBoolean("bible_installed", false)) {
             new BibleImportThread(this, settings).execute();
         }
 
         mBooksArrayAdapter = ArrayAdapter.createFromResource(this, R.array.new_books, R.layout.books_row);
         setListAdapter(mBooksArrayAdapter);
-	}
-
-	@Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-	    TextView view = (TextView) v;
-	    Intent intent = new Intent(this, BookActivity.class);
-	    intent.putExtra(NewTest.Columns.BOOK, view.getText().toString());
-	    startActivity(intent);
     }
 
-	@Override
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        TextView view = (TextView) v;
+        Intent intent = new Intent(this, BookActivity.class);
+        intent.putExtra(NewTest.Columns.BOOK, view.getText().toString());
+        startActivity(intent);
+    }
+
+    @Override
     protected Dialog onCreateDialog(int id) {
         switch (id) {
             case DIALOG_IMPORTING_BIBLE:

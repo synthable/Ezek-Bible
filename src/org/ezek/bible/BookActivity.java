@@ -19,7 +19,7 @@ public class BookActivity extends ListActivity {
 
 		Intent i = getIntent();
 		String book = i.getStringExtra(NewTest.Columns.BOOK);
-		
+
 		Uri uri = NewTest.BOOK_URI.buildUpon()
 		    .appendPath(book)
 		    .build();

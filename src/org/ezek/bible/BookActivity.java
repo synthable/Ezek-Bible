@@ -20,10 +20,10 @@ public class BookActivity extends ListActivity {
 		Intent i = getIntent();
 		String book = i.getStringExtra(NewTest.Columns.BOOK);
 
-		Uri uri = NewTest.BOOK_URI.buildUpon()
-		    .appendPath(book)
-		    .build();
-		String[] projection = new String[] {
+        Uri uri = NewTest.BOOK_URI.buildUpon()
+            .appendPath(book)
+            .build();
+        String[] projection = new String[] {
             NewTest.Columns._ID, NewTest.Columns.CAP, NewTest.Columns.VERSE, NewTest.Columns.LINE
         };
         Cursor cursor = managedQuery(uri, projection, null, null, null);

@@ -13,12 +13,12 @@ public class BookActivity extends ListActivity {
 
     private SimpleCursorAdapter mBookAdapter;
 
-	@Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
-		Intent i = getIntent();
-		String book = i.getStringExtra(NewTest.Columns.BOOK);
+        Intent i = getIntent();
+        String book = i.getStringExtra(NewTest.Columns.BOOK);
 
         Uri uri = NewTest.BOOK_URI.buildUpon()
             .appendPath(book)

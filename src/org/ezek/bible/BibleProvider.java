@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 public class BibleProvider extends ContentProvider {
     public static final String AUTHORITY = "org.ezek.bible.bibleprovider";
@@ -35,7 +36,36 @@ public class BibleProvider extends ContentProvider {
 
         public static final String TYPE_DIR = "vnd.android.cursor.dir/vnd.ezek.bible.category";
         public static final String TYPE_ITEM = "vnd.android.cursor.item/vnd.ezek.bible.category";
-        
+
+        public static final class Columns implements BaseColumns {
+            public static final String CAP = "cap";
+            public static final String VERSE = "verse";
+            public static final String LINE = "line";
+            public static final String BOOK = "book";
+        }
+    }
+
+    public static final class OldTest {
+        public static final Uri URI = Uri.parse(CONTENT_URI + "/oldtest");
+        public static final Uri BOOKS_URI = Uri.parse(CONTENT_URI + "/oldtest/books");
+        public static final Uri BOOK_URI = Uri.parse(CONTENT_URI + "/oldtest/book");
+        public static final String TABLE = "old_test";
+        public static final String SCHEMA =
+            "CREATE TABLE " + TABLE + "("
+                + Columns._ID + " integer primary key autoincrement,"
+                + Columns.CAP + " integer,"
+                + Columns.VERSE + " integer,"
+                + Columns.LINE + " varchar(255),"
+                + Columns.BOOK + " varchar(32)"
+            + ");";
+        public static final String DEFAULT_SORT_ORDER = "name ASC";
+        public static final String[] PROJECTION = {
+            Columns._ID, Columns.CAP, Columns.VERSE, Columns.LINE, Columns.BOOK
+        };
+
+        public static final String TYPE_DIR = "vnd.android.cursor.dir/vnd.ezek.bible.category";
+        public static final String TYPE_ITEM = "vnd.android.cursor.item/vnd.ezek.bible.category";
+
         public static final class Columns implements BaseColumns {
             public static final String CAP = "cap";
             public static final String VERSE = "verse";
@@ -71,6 +101,11 @@ public class BibleProvider extends ContentProvider {
     private static final int NEW_BOOK_VERSE = 102;
     private static final int NEW_BOOK_VERSE_RANDOM = 103;
 
+    private static final int OLD_BOOKS = 200;
+    private static final int OLD_BOOK = 201;
+    private static final int OLD_BOOK_VERSE = 202;
+    private static final int OLD_BOOK_VERSE_RANDOM = 203;
+
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
@@ -78,6 +113,11 @@ public class BibleProvider extends ContentProvider {
         sUriMatcher.addURI(AUTHORITY, "newtest/book/*", NEW_BOOK);
         sUriMatcher.addURI(AUTHORITY, "newtest/book/*/verse", NEW_BOOK_VERSE);
         sUriMatcher.addURI(AUTHORITY, "newtest/book/*/verse/random", NEW_BOOK_VERSE_RANDOM);
+
+        sUriMatcher.addURI(AUTHORITY, "oldtest/books", OLD_BOOKS);
+        sUriMatcher.addURI(AUTHORITY, "oldtest/book/*", OLD_BOOK);
+        sUriMatcher.addURI(AUTHORITY, "oldtest/book/*/verse", OLD_BOOK_VERSE);
+        sUriMatcher.addURI(AUTHORITY, "oldtest/book/*/verse/random", OLD_BOOK_VERSE_RANDOM);
     }
 
     @Override
@@ -103,6 +143,14 @@ public class BibleProvider extends ContentProvider {
                 return NewTest.TYPE_ITEM;
             case NEW_BOOK_VERSE_RANDOM:
                 return NewTest.TYPE_ITEM;
+            case OLD_BOOKS:
+                return NewTest.TYPE_DIR;
+            case OLD_BOOK:
+                return NewTest.TYPE_ITEM;
+            case OLD_BOOK_VERSE:
+                return NewTest.TYPE_ITEM;
+            case OLD_BOOK_VERSE_RANDOM:
+                return NewTest.TYPE_ITEM;
             default:
                 throw new IllegalArgumentException("Unknown URL " + uri);
         }
@@ -118,15 +166,14 @@ public class BibleProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
-//Log.v("query()", uri.toString() +" AND "+ sUriMatcher.match(uri));
+Log.v("query()", uri.toString() +" AND "+ sUriMatcher.match(uri));
 
+        SQLiteDatabase mDb = dbHelper.getReadableDatabase();
         String limit = null;
 
         switch (sUriMatcher.match(uri)) {
             case NEW_BOOKS:
-                String sql = "SELECT _id, DISTINCT book FROM new_test";
-                SQLiteDatabase mDb = dbHelper.getReadableDatabase();
-                Cursor c = mDb.rawQuery(sql, null);
+                Cursor c = mDb.rawQuery("SELECT _id, DISTINCT book FROM new_test", null);
                 c.setNotificationUri(getContext().getContentResolver(), uri);
                 return c;
             case NEW_BOOK:
@@ -151,11 +198,36 @@ public class BibleProvider extends ContentProvider {
                 }
                 limit = "1";
                 break;
+            case OLD_BOOKS:
+                Cursor c2 = mDb.rawQuery("SELECT _id, DISTINCT book FROM old_test", null);
+                c2.setNotificationUri(getContext().getContentResolver(), uri);
+                return c2;
+            case OLD_BOOK:
+                qb.setTables(OldTest.TABLE);
+                if (selection == null) {
+                    selection = OldTest.Columns.BOOK + " = '" + uri.getLastPathSegment() +"'";
+                }
+                break;
+            case OLD_BOOK_VERSE:
+                qb.setTables(OldTest.TABLE);
+                if (selection == null) {
+                    selection = OldTest.Columns.VERSE + " = " + uri.getPathSegments().get(1);
+                }
+                break;
+            case OLD_BOOK_VERSE_RANDOM:
+                qb.setTables(OldTest.TABLE);
+                if (selection == null) {
+                    selection = OldTest.Columns.VERSE + " = " + uri.getPathSegments().get(1);
+                }
+                if(sortOrder == null) {
+                    sortOrder = "RANDOM()";
+                }
+                limit = "1";
+                break;
             default:
                 throw new IllegalArgumentException("Unknown query().URI: " + uri);
         }
 
-        SQLiteDatabase mDb = dbHelper.getReadableDatabase();
         Cursor c = qb.query(mDb, projection, selection, selectionArgs, null, null, sortOrder, limit);
         c.setNotificationUri(getContext().getContentResolver(), uri);
 

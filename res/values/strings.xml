@@ -2,5 +2,7 @@
 <resources>
     <string name="hello">Hello World</string>
     <string name="app_name">Ezek Bible</string>
-<string name="dialog_importing_bible">Importing the database...</string>
+	<string name="dialog_importing_bible">Importing the database...</string>
+	<string name="menu_options_oldtest">Old Testament</string>
+    <string name="menu_options_newtest">New Testament</string>
 </resources>

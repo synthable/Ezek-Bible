@@ -1,6 +1,7 @@
 package org.ezek.bible;
 
 import org.ezek.bible.BibleProvider.NewTest;
+import org.ezek.bible.BibleProvider.OldTest;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -31,12 +32,23 @@ public class BookActivity extends ListActivity {
         mAdmobAdView.setSecondaryTextColor(R.color.adviewSecondaryTextColor);
         getListView().addHeaderView(mAdmobAdView);
 
-        Uri uri = NewTest.BOOK_URI.buildUpon()
-            .appendPath(book)
-            .build();
-        String[] projection = new String[] {
-            NewTest.Columns._ID, NewTest.Columns.CAP, NewTest.Columns.VERSE, NewTest.Columns.LINE
-        };
+        Uri uri;
+        String[] projection;
+        if(i.getStringExtra("version").equals(OldTest.TABLE)) {
+            uri = OldTest.BOOK_URI.buildUpon()
+                .appendPath(book)
+                .build();
+            projection = new String[] {
+                OldTest.Columns._ID, OldTest.Columns.CAP, OldTest.Columns.VERSE, OldTest.Columns.LINE
+            };
+        } else {
+            uri = NewTest.BOOK_URI.buildUpon()
+                .appendPath(book)
+                .build();
+            projection = new String[] {
+                NewTest.Columns._ID, NewTest.Columns.CAP, NewTest.Columns.VERSE, NewTest.Columns.LINE
+            };
+        }
         Cursor cursor = managedQuery(uri, projection, null, null, null);
 
         String[] from = new String[] {

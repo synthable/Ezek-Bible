@@ -18,7 +18,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.admob.android.ads.AdManager;
 import com.admob.android.ads.AdView;
 
 public class BooksList extends ListActivity {
@@ -38,11 +37,6 @@ public class BooksList extends ListActivity {
             new BibleImportThread(this, settings).execute();
         }
 
-        AdManager.setTestDevices( new String[] { 
-            AdManager.TEST_EMULATOR, 
-            "a14cffce23116ff" 
-        });
-        
         LayoutInflater li = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         mAdmobAdView = (AdView) li.inflate(R.layout.admob_adview, null);
         mAdmobAdView.setBackgroundColor(R.color.adviewBackgroundColor);

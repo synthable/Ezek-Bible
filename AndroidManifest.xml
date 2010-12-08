@@ -1,16 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest android:versionCode="1" android:versionName="1.0"
-    package="org.ezek.bible" xmlns:android="http://schemas.android.com/apk/res/android">
-    <application android:icon="@drawable/icon" android:label="@string/app_name">
-        <activity android:label="@string/app_name" android:name=".BooksList">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-        <provider android:authorities="org.ezek.bible.bibleprovider" android:name=".BibleProvider"/>
-        <!-- <activity android:name=".BooksList"/> -->
-        <activity android:name=".BookActivity"/>
-    </application>
-    <uses-sdk android:minSdkVersion="4"/>
+	package="org.ezek.bible" xmlns:android="http://schemas.android.com/apk/res/android">
+	<application android:icon="@drawable/icon" android:label="@string/app_name">
+		<!-- The application's publisher ID assigned by AdMob -->
+		<meta-data android:value="a14cffce23116ff" android:name="ADMOB_PUBLISHER_ID" />
+		<activity android:label="@string/app_name" android:name=".BooksList">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+		<provider android:authorities="org.ezek.bible.bibleprovider"
+			android:name=".BibleProvider" />
+		<!-- <activity android:name=".BooksList"/> -->
+		<activity android:name=".BookActivity" />
+		<!-- Track Market installs -->
+		<receiver android:name="com.admob.android.ads.analytics.InstallReceiver"
+			android:exported="true">
+			<intent-filter>
+				<action android:name="com.android.vending.INSTALL_REFERRER" />
+			</intent-filter>
+		</receiver>
+		<!-- AdMobActivity definition -->
+		<activity android:name="com.admob.android.ads.AdMobActivity"
+			android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+			android:configChanges="orientation|keyboard|keyboardHidden" />
+	</application>
+	<uses-sdk android:minSdkVersion="4" />
+	<meta-data android:value="true" android:name="ADMOB_ALLOW_LOCATION_FOR_ADS" />
+	<uses-permission android:name="android.permission.INTERNET" />
 </manifest>

@@ -7,11 +7,15 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.widget.SimpleCursorAdapter;
+
+import com.admob.android.ads.AdView;
 
 public class BookActivity extends ListActivity {
 
     private SimpleCursorAdapter mBookAdapter;
+    private AdView mAdmobAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +23,13 @@ public class BookActivity extends ListActivity {
 
         Intent i = getIntent();
         String book = i.getStringExtra(NewTest.Columns.BOOK);
+
+        LayoutInflater li = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        mAdmobAdView = (AdView) li.inflate(R.layout.admob_adview, null);
+        mAdmobAdView.setBackgroundColor(R.color.adviewBackgroundColor);
+        mAdmobAdView.setPrimaryTextColor(R.color.adviewPrimaryTextColor);
+        mAdmobAdView.setSecondaryTextColor(R.color.adviewSecondaryTextColor);
+        getListView().addHeaderView(mAdmobAdView);
 
         Uri uri = NewTest.BOOK_URI.buildUpon()
             .appendPath(book)

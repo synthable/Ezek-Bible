@@ -27,9 +27,7 @@ public class BookActivity extends ListActivity {
 
         LayoutInflater li = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         mAdmobAdView = (AdView) li.inflate(R.layout.admob_adview, null);
-        mAdmobAdView.setBackgroundColor(R.color.adviewBackgroundColor);
-        mAdmobAdView.setPrimaryTextColor(R.color.adviewPrimaryTextColor);
-        mAdmobAdView.setSecondaryTextColor(R.color.adviewSecondaryTextColor);
+        mAdmobAdView.setKeywords(book +" bible testament religion jesus god");
         getListView().addHeaderView(mAdmobAdView);
 
         Uri uri;

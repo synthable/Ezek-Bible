@@ -39,9 +39,7 @@ public class BooksList extends ListActivity {
 
         LayoutInflater li = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         mAdmobAdView = (AdView) li.inflate(R.layout.admob_adview, null);
-        mAdmobAdView.setBackgroundColor(R.color.adviewBackgroundColor);
-        mAdmobAdView.setPrimaryTextColor(R.color.adviewPrimaryTextColor);
-        mAdmobAdView.setSecondaryTextColor(R.color.adviewSecondaryTextColor);
+        mAdmobAdView.setKeywords("bible testament religion jesus god");
         getListView().addHeaderView(mAdmobAdView);
 
         Intent intent = getIntent();
@@ -56,6 +54,12 @@ public class BooksList extends ListActivity {
 
         mBooksArrayAdapter = ArrayAdapter.createFromResource(this, books, R.layout.books_row);
         setListAdapter(mBooksArrayAdapter);
+    }
+
+    @Override
+    protected void onResume() {
+        mAdmobAdView.requestFreshAd();
+        super.onResume();
     }
 
     @Override

@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:text="@+id/TextView01" android:id="@+id/book_row"
-	android:layout_height="wrap_content" android:orientation="horizontal" android:layout_width="fill_parent">
-	
-	
-	
-<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/book_row_cap_view" android:text="cap" android:layout_marginLeft="5sp"></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/book_row_colon_view" android:text=":" android:layout_marginLeft="2sp"></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/book_row_verse_view" android:text="verse" android:layout_marginLeft="2sp"></TextView>
-<TextView android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/book_row_line_view" android:text="line" android:layout_marginLeft="15sp"></TextView>
+	android:id="@+id/book_row"
+	android:layout_height="wrap_content" android:orientation="horizontal"
+	android:layout_width="fill_parent" android:paddingBottom="2.5dp" android:paddingTop="2.5dp">
 
+	<TextView android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/book_row_cap_view"
+		android:text="cap" android:layout_marginLeft="5sp" android:textSize="16sp"></TextView>
+	<TextView android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/book_row_colon_view"
+		android:text=":" android:layout_marginLeft="2sp" android:textSize="16sp"></TextView>
+	<TextView android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/book_row_verse_view"
+		android:text="verse" android:layout_marginLeft="2sp" android:textSize="16sp"></TextView>
+	<TextView android:layout_height="wrap_content"
+		android:layout_width="fill_parent" android:id="@+id/book_row_line_view"
+		android:text="line" android:layout_marginLeft="15sp" android:textSize="16sp"></TextView>
 
 </LinearLayout>

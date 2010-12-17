@@ -98,12 +98,12 @@ public class BibleProvider extends ContentProvider {
 
     private static final int NEW_BOOKS = 100;
     private static final int NEW_BOOK = 101;
-    private static final int NEW_BOOK_VERSE = 102;
+    private static final int NEW_BOOK_CAP = 102;
     private static final int NEW_BOOK_VERSE_RANDOM = 103;
 
     private static final int OLD_BOOKS = 200;
     private static final int OLD_BOOK = 201;
-    private static final int OLD_BOOK_VERSE = 202;
+    private static final int OLD_BOOK_CAP = 202;
     private static final int OLD_BOOK_VERSE_RANDOM = 203;
 
     static {
@@ -111,12 +111,12 @@ public class BibleProvider extends ContentProvider {
 
         sUriMatcher.addURI(AUTHORITY, "newtest/books", NEW_BOOKS);
         sUriMatcher.addURI(AUTHORITY, "newtest/book/*", NEW_BOOK);
-        sUriMatcher.addURI(AUTHORITY, "newtest/book/*/verse", NEW_BOOK_VERSE);
+        sUriMatcher.addURI(AUTHORITY, "newtest/book/*/cap/#", NEW_BOOK_CAP);
         sUriMatcher.addURI(AUTHORITY, "newtest/book/*/verse/random", NEW_BOOK_VERSE_RANDOM);
 
         sUriMatcher.addURI(AUTHORITY, "oldtest/books", OLD_BOOKS);
         sUriMatcher.addURI(AUTHORITY, "oldtest/book/*", OLD_BOOK);
-        sUriMatcher.addURI(AUTHORITY, "oldtest/book/*/verse", OLD_BOOK_VERSE);
+        sUriMatcher.addURI(AUTHORITY, "oldtest/book/*/cap/#", OLD_BOOK_CAP);
         sUriMatcher.addURI(AUTHORITY, "oldtest/book/*/verse/random", OLD_BOOK_VERSE_RANDOM);
     }
 
@@ -139,7 +139,7 @@ public class BibleProvider extends ContentProvider {
                 return NewTest.TYPE_DIR;
             case NEW_BOOK:
                 return NewTest.TYPE_ITEM;
-            case NEW_BOOK_VERSE:
+            case NEW_BOOK_CAP:
                 return NewTest.TYPE_ITEM;
             case NEW_BOOK_VERSE_RANDOM:
                 return NewTest.TYPE_ITEM;
@@ -147,7 +147,7 @@ public class BibleProvider extends ContentProvider {
                 return NewTest.TYPE_DIR;
             case OLD_BOOK:
                 return NewTest.TYPE_ITEM;
-            case OLD_BOOK_VERSE:
+            case OLD_BOOK_CAP:
                 return NewTest.TYPE_ITEM;
             case OLD_BOOK_VERSE_RANDOM:
                 return NewTest.TYPE_ITEM;
@@ -182,10 +182,11 @@ Log.v("query()", uri.toString() +" AND "+ sUriMatcher.match(uri));
                     selection = NewTest.Columns.BOOK + " = '" + uri.getLastPathSegment() +"'";
                 }
                 break;
-            case NEW_BOOK_VERSE:
+            case NEW_BOOK_CAP:
                 qb.setTables(NewTest.TABLE);
+                qb.appendWhere(NewTest.Columns.BOOK + " = '" + uri.getPathSegments().get(2) +"'");
                 if (selection == null) {
-                    selection = NewTest.Columns.VERSE + " = " + uri.getPathSegments().get(1);
+                    selection = NewTest.Columns.CAP + " = " + uri.getLastPathSegment();
                 }
                 break;
             case NEW_BOOK_VERSE_RANDOM:
@@ -208,10 +209,11 @@ Log.v("query()", uri.toString() +" AND "+ sUriMatcher.match(uri));
                     selection = OldTest.Columns.BOOK + " = '" + uri.getLastPathSegment() +"'";
                 }
                 break;
-            case OLD_BOOK_VERSE:
+            case OLD_BOOK_CAP:
                 qb.setTables(OldTest.TABLE);
+                qb.appendWhere(OldTest.Columns.BOOK + " = '" + uri.getPathSegments().get(2) +"'");
                 if (selection == null) {
-                    selection = OldTest.Columns.VERSE + " = " + uri.getPathSegments().get(1);
+                    selection = OldTest.Columns.CAP + " = " + uri.getLastPathSegment();
                 }
                 break;
             case OLD_BOOK_VERSE_RANDOM:

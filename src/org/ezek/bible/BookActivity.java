@@ -25,6 +25,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import com.admob.android.ads.AdView;
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 public class BookActivity extends ListActivity {
 
@@ -40,6 +41,7 @@ public class BookActivity extends ListActivity {
     private AdView mAdmobAdView;
     private TextToSpeech mTts;
 
+    private GoogleAnalyticsTracker mGaTracker;
     private String mStartVoice;
     private String mStopVoice;
     private String mBook;
@@ -95,6 +97,9 @@ public class BookActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mGaTracker = GoogleAnalyticsTracker.getInstance();
+        mGaTracker.start("UA-15698752-2", this);
+
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checkIntent, TTS_CHECK);
@@ -104,6 +109,8 @@ public class BookActivity extends ListActivity {
         
         Intent i = getIntent();
         mBook = i.getStringExtra(NewTest.Columns.BOOK);
+
+        mGaTracker.trackPageView("/book/"+ mBook);
 
         LayoutInflater li = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         mAdmobAdView = (AdView) li.inflate(R.layout.admob_adview, null);
@@ -135,6 +142,12 @@ public class BookActivity extends ListActivity {
         mBookAdapter = new SimpleCursorAdapter(this, R.layout.book_row, cursor, from, to);
         setListAdapter(mBookAdapter);
 	}
+
+    @Override
+    protected void onPause() {
+        mGaTracker.dispatch();
+        super.onPause();
+    }
 
     @Override
     protected void onDestroy() {
@@ -177,6 +190,7 @@ public class BookActivity extends ListActivity {
                                 .appendPath("cap")
                                 .appendPath(Integer.toString(item))
                                 .build();
+                            mGaTracker.trackPageView("/book/"+ mBook +"/chapter/"+ item);
                         }
 
                         Cursor c = managedQuery(uri, null, null, null, null);
@@ -191,6 +205,7 @@ public class BookActivity extends ListActivity {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
+        mGaTracker.trackPageView("/speech/single");
         Cursor c = mBookAdapter.getCursor();
         c.moveToPosition(position-1);
         final String line = c.getString(c.getColumnIndexOrThrow(NewTest.Columns.LINE));
@@ -219,9 +234,11 @@ public class BookActivity extends ListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case MENU_VOICE_START:
+                mGaTracker.trackPageView("/speech/chapter/start");
                 mTts = new TextToSpeech(this, new mOnInitListener());
                 break;
             case MENU_VOICE_STOP:
+                mGaTracker.trackPageView("/speech/chapter/stop");
                 if(mTts != null) {
                     mTts.stop();
                     mTts.shutdown();

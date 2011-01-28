@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.admob.android.ads.AdView;
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 public class BooksList extends ListActivity {
 
@@ -27,11 +28,17 @@ public class BooksList extends ListActivity {
     private ArrayAdapter<CharSequence> mBooksArrayAdapter;
     private AdView mAdmobAdView;
     private String VERSION;
+    private GoogleAnalyticsTracker mGaTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mGaTracker = GoogleAnalyticsTracker.getInstance();
+        mGaTracker.start("UA-15698752-2", this);
+
+        mGaTracker.trackPageView("/home");
+        
         SharedPreferences settings = getSharedPreferences("settings", MODE_PRIVATE);
         if (!settings.getBoolean("bible_installed", false)) {
             new BibleImportThread(this, settings).execute();
@@ -54,6 +61,12 @@ public class BooksList extends ListActivity {
 
         mBooksArrayAdapter = ArrayAdapter.createFromResource(this, books, R.layout.books_row);
         setListAdapter(mBooksArrayAdapter);
+    }
+
+    @Override
+    protected void onPause() {
+        mGaTracker.dispatch();
+        super.onPause();
     }
 
     @Override
@@ -86,9 +99,11 @@ public class BooksList extends ListActivity {
 
         switch (item.getItemId()) {
             case R.id.menu_options_newtest:
+                mGaTracker.trackPageView("/newtest");
                 intent.putExtra("version", NewTest.TABLE);
                 break;
             case R.id.menu_options_oldtest:
+                mGaTracker.trackPageView("/oldtest");
                 intent.putExtra("version", OldTest.TABLE);
                 break;
             default:

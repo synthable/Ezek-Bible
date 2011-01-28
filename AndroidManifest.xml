@@ -26,6 +26,7 @@
 	</application>
 	<uses-sdk android:minSdkVersion="4" />
 	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<!-- The application's publisher ID assigned by AdMob -->
 	<meta-data android:name="ADMOB_PUBLISHER_ID" android:value="a14cffce23116ff" />
 	<meta-data android:value="true" android:name="ADMOB_ALLOW_LOCATION_FOR_ADS" />

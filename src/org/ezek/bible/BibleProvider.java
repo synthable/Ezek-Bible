@@ -100,11 +100,13 @@ public class BibleProvider extends ContentProvider {
     private static final int NEW_BOOK = 101;
     private static final int NEW_BOOK_CAP = 102;
     private static final int NEW_BOOK_VERSE_RANDOM = 103;
+    private static final int NEW_BOOK_CHAPTERS_UNIQUE = 104;
 
     private static final int OLD_BOOKS = 200;
     private static final int OLD_BOOK = 201;
     private static final int OLD_BOOK_CAP = 202;
     private static final int OLD_BOOK_VERSE_RANDOM = 203;
+    private static final int OLD_BOOK_CHAPTERS_UNIQUE = 204;
 
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -113,11 +115,13 @@ public class BibleProvider extends ContentProvider {
         sUriMatcher.addURI(AUTHORITY, "newtest/book/*", NEW_BOOK);
         sUriMatcher.addURI(AUTHORITY, "newtest/book/*/cap/#", NEW_BOOK_CAP);
         sUriMatcher.addURI(AUTHORITY, "newtest/book/*/verse/random", NEW_BOOK_VERSE_RANDOM);
+        sUriMatcher.addURI(AUTHORITY, "newtest/book/*/chapters/unique", NEW_BOOK_CHAPTERS_UNIQUE);
 
         sUriMatcher.addURI(AUTHORITY, "oldtest/books", OLD_BOOKS);
         sUriMatcher.addURI(AUTHORITY, "oldtest/book/*", OLD_BOOK);
         sUriMatcher.addURI(AUTHORITY, "oldtest/book/*/cap/#", OLD_BOOK_CAP);
         sUriMatcher.addURI(AUTHORITY, "oldtest/book/*/verse/random", OLD_BOOK_VERSE_RANDOM);
+        sUriMatcher.addURI(AUTHORITY, "oldtest/book/*/chapters/unique", OLD_BOOK_CHAPTERS_UNIQUE);
     }
 
     @Override
@@ -151,6 +155,10 @@ public class BibleProvider extends ContentProvider {
                 return NewTest.TYPE_ITEM;
             case OLD_BOOK_VERSE_RANDOM:
                 return NewTest.TYPE_ITEM;
+            case NEW_BOOK_CHAPTERS_UNIQUE:
+                return NewTest.TYPE_DIR;
+            case OLD_BOOK_CHAPTERS_UNIQUE:
+                return OldTest.TYPE_DIR;
             default:
                 throw new IllegalArgumentException("Unknown URL " + uri);
         }
@@ -199,6 +207,15 @@ Log.v("query()", uri.toString() +" AND "+ sUriMatcher.match(uri));
                 }
                 limit = "1";
                 break;
+            case NEW_BOOK_CHAPTERS_UNIQUE: {
+                qb.setTables(NewTest.TABLE);
+                qb.setDistinct(true);
+                projection = new String[] {NewTest.Columns.CAP};
+                if (selection == null) {
+                    selection = NewTest.Columns.BOOK + " = '" + uri.getPathSegments().get(2) +"'";
+                }
+                break;
+            }
             case OLD_BOOKS:
                 Cursor c2 = mDb.rawQuery("SELECT _id, DISTINCT book FROM old_test", null);
                 c2.setNotificationUri(getContext().getContentResolver(), uri);
@@ -226,6 +243,15 @@ Log.v("query()", uri.toString() +" AND "+ sUriMatcher.match(uri));
                 }
                 limit = "1";
                 break;
+            case OLD_BOOK_CHAPTERS_UNIQUE: {
+                qb.setTables(OldTest.TABLE);
+                qb.setDistinct(true);
+                projection = new String[] {OldTest.Columns.CAP};
+                if (selection == null) {
+                    selection = OldTest.Columns.BOOK + " = '" + uri.getPathSegments().get(2) +"'";
+                }
+                break;
+            }
             default:
                 throw new IllegalArgumentException("Unknown query().URI: " + uri);
         }

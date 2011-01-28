@@ -6,7 +6,10 @@ import java.util.Locale;
 import org.ezek.bible.BibleProvider.NewTest;
 import org.ezek.bible.BibleProvider.OldTest;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -14,14 +17,12 @@ import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.speech.tts.TextToSpeech.OnUtteranceCompletedListener;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 
 import com.admob.android.ads.AdView;
 
@@ -31,6 +32,9 @@ public class BookActivity extends ListActivity {
 
     private static final int MENU_VOICE_START = 1;
     private static final int MENU_VOICE_STOP = 2;
+    private static final int MENU_CHAPTER_JUMP = 3;
+
+    private static final int DIALOG_CHAPTER_JUMP = 1;
 
     private SimpleCursorAdapter mBookAdapter;
     private AdView mAdmobAdView;
@@ -39,7 +43,7 @@ public class BookActivity extends ListActivity {
     private String mStartVoice;
     private String mStopVoice;
     private String mBook;
-    private boolean mNewTest = true;
+    private Uri mBaseUri;
 
     class mOnInitListener implements OnInitListener, OnUtteranceCompletedListener {
         HashMap<String, String> options = new HashMap<String, String>();
@@ -49,13 +53,7 @@ public class BookActivity extends ListActivity {
 
         public Uri getNextCursorUri() {
             cap++;
-            Uri uri;
-            if (mNewTest) {
-                uri = NewTest.BOOK_URI;
-            } else {
-                uri = OldTest.BOOK_URI;
-            }
-            return uri.buildUpon()
+            return mBaseUri.buildUpon()
                 .appendPath(mBook)
                 .appendPath(OldTest.Columns.CAP)
                 .appendPath(Integer.toString(cap))
@@ -112,24 +110,20 @@ public class BookActivity extends ListActivity {
         mAdmobAdView.setKeywords(mBook +" bible testament religion jesus god");
         getListView().addHeaderView(mAdmobAdView);
 
-        Uri uri;
-        String[] projection;
+        getListView().setFastScrollEnabled(true);
+
         if(i.getStringExtra("version").equals(OldTest.TABLE)) {
-            uri = OldTest.BOOK_URI.buildUpon()
-                .appendPath(mBook)
-                .build();
-            projection = new String[] {
-                OldTest.Columns._ID, OldTest.Columns.CAP, OldTest.Columns.VERSE, OldTest.Columns.LINE
-            };
-            mNewTest = false;
+            mBaseUri = OldTest.BOOK_URI;
         } else {
-            uri = NewTest.BOOK_URI.buildUpon()
-                .appendPath(mBook)
-                .build();
-            projection = new String[] {
-                NewTest.Columns._ID, NewTest.Columns.CAP, NewTest.Columns.VERSE, NewTest.Columns.LINE
-            };
+            mBaseUri = NewTest.BOOK_URI;
         }
+
+        String[] projection = new String[] {
+            NewTest.Columns._ID, NewTest.Columns.CAP, NewTest.Columns.VERSE, NewTest.Columns.LINE
+        };
+        Uri uri = mBaseUri.buildUpon()
+            .appendPath(mBook)
+            .build();
         Cursor cursor = managedQuery(uri, projection, null, null, null);
 
         String[] from = new String[] {
@@ -149,6 +143,50 @@ public class BookActivity extends ListActivity {
             mTts.shutdown();
         }
         super.onDestroy();
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch(id) {
+            case DIALOG_CHAPTER_JUMP:
+                Uri uri = mBaseUri.buildUpon()
+                    .appendPath(mBook)
+                    .appendPath("chapters")
+                    .appendPath("unique")
+                    .build();
+                Cursor c = managedQuery(uri, null, null, null, null);
+
+                int chapterCount = c.getCount() + 1;
+                String[] chapters = new String[chapterCount];
+                chapters[0] = "All";
+                for(int x = 1;x<chapterCount;x++) {
+                    chapters[x] = "Chapter "+ x;
+                }
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(getResources().getString(R.string.menu_options_chapter_jump));
+                builder.setItems(chapters, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
+                        Uri uri = mBaseUri.buildUpon()
+                            .appendPath(mBook)
+                            .build();
+
+                        /** Show all chapters or only one? **/
+                        if(item != 0) {
+                            uri = uri .buildUpon()
+                                .appendPath("cap")
+                                .appendPath(Integer.toString(item))
+                                .build();
+                        }
+
+                        Cursor c = managedQuery(uri, null, null, null, null);
+                        mBookAdapter.changeCursor(c);
+                    }
+                });
+                return builder.create();
+            default:
+                return null;
+        }
     }
 
     @Override
@@ -173,6 +211,7 @@ public class BookActivity extends ListActivity {
         } else {
             menu.add(0, MENU_VOICE_START, 0, mStartVoice);
         }
+        menu.add(0, MENU_CHAPTER_JUMP, 0, "Chapter");
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -188,6 +227,9 @@ public class BookActivity extends ListActivity {
                     mTts.shutdown();
                     mTts = null;
                 }
+                break;
+            case MENU_CHAPTER_JUMP:
+                showDialog(DIALOG_CHAPTER_JUMP);
                 break;
         }
         return super.onOptionsItemSelected(item);

@@ -7,4 +7,5 @@
     <string name="menu_options_newtest">New Testament</string>
     <string name="menu_options_start_voice">Start voice playback</string>
 	<string name="menu_options_stop_voice">Stop voice playback</string>
+	<string name="menu_options_chapter_jump">Select a chapter</string>
 </resources>
